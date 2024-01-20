@@ -381,9 +381,9 @@ function determineWinner(playerHand, dealerHand) {
                 multiplier = 1; //Normal Win x1
             }
         } else if (dealerScore === 80) {
-            multiplier = -3;
+            multiplier = -3; //Dealer Ban-Ban, lose x3
         } else if (dealerScore === 60 || dealerScore === 70) {
-            multiplier = -2;
+            multiplier = -2; //Dealer Ban-Luck/Wu-Long, lose x2
         } else {
             multiplier = -1; //Your luck shit, lose
         }
@@ -396,7 +396,6 @@ function determineWinner(playerHand, dealerHand) {
     //}
     //console.log(arr);
     //return arr;
-    console.log(multiplier)
     return multiplier;
 }
 
