@@ -324,8 +324,6 @@ function calculateHandValue(hand) {
             numAces++;
             if (hand.length === 2) {
                 values = 11;
-            } else if (sum + 10 > 21 || hand.length === 4) {
-                values = 1;
             } else {
                 values = 10;
             }
@@ -336,11 +334,15 @@ function calculateHandValue(hand) {
     
     if (hand.length === 2) {
         if (numAces === 2) {
-            sum = 100; //Ban-Ban
+            sum = 89; //Ban-Ban
         }
         else if (sum === 21 && numAces === 1) {
-            sum = 70; //Ban-Luck
+            sum = 69; //Ban-Luck
         }    
+    }
+
+    if (numAces > 0 && (sum > 21 || hand.length === 4)) {
+        sum -= 9;
     }
 
     if (hand.length === 5 && sum <= 21) {
@@ -378,6 +380,10 @@ function determineWinner(playerHand, dealerHand) {
             } else {
                 multiplier = 1; //Normal Win x1
             }
+        } else if (dealerScore === 80) {
+            multiplier = -3;
+        } else if (dealerScore === 60 || dealerScore === 70) {
+            multiplier = -2;
         } else {
             multiplier = -1; //Your luck shit, lose
         }
@@ -390,6 +396,7 @@ function determineWinner(playerHand, dealerHand) {
     //}
     //console.log(arr);
     //return arr;
+    console.log(multiplier)
     return multiplier;
 }
 

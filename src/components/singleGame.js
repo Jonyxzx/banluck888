@@ -351,6 +351,7 @@ export default function SingleGame({ game }) {
 
     const win = () => {
         const playerMul = determineWinner(game.players[0].hand, game.dealer.hand);
+        console.log(playerMul)
         setAmt(playerMul * 100)
         if (playerMul === 0) {
             setGameResult("You Draw >_<")
