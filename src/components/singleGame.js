@@ -426,7 +426,7 @@ export default function SingleGame({ game }) {
                                 Hit
                             </Button> :
                                 <></>}
-                            {playerHands.length != 5 && playerValue < 21 && !hasStood ? <Button variant="contained" color="secondary" onClick={handleStand}>
+                            {playerHands.length != 5 && playerValue < 21 && !hasStood && playerValue > 15 ? <Button variant="contained" color="secondary" onClick={handleStand}>
                                 Stand
                             </Button> :
                                 <></>}
