@@ -59,7 +59,7 @@ const PaymentPage = () => {
                         <Grid item xs={12} sm={6} md={4}>
                             <Box p={3} border={1} borderRadius={8} textAlign="center" sx={{ backgroundColor: 'white', opacity: 0.9 }}>
                                 <Typography variant="h6">PayNow</Typography>
-                                <img src={paynow} alt="paynow qr" />
+                                <img src={paynow} alt="paynow qr" width={250} height={250} />
                                 <Button variant="contained" color="secondary" fullWidth onClick={handlePayment}>
                                     Pay with PayNow
                                 </Button>

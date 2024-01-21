@@ -334,7 +334,7 @@ function calculateHandValue(hand) {
     
     if (hand.length === 2) {
         if (numAces === 2) {
-            sum = 89; //Ban-Ban
+            sum = 98; //Ban-Ban
         }
         else if (sum === 21 && numAces === 1) {
             sum = 69; //Ban-Luck
