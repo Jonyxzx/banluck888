@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import { ref, onValue } from "firebase/database";
 import logo from "../assets/logo.png"
 import { db } from '../backend/firebase';
+import backgroundMusic from "../assets/sounds/chinesebgm.mp3";
+
 
 function Navbar() {
     const authUser = auth.currentUser;
@@ -20,6 +22,12 @@ function Navbar() {
   useEffect(() => {
     // Initial check when the component mounts
     checkAuthState();
+
+    //lower music
+    const audioElement = document.getElementById('background-music');
+    if (audioElement) {
+      audioElement.volume = 0.1; // Set the desired volume level (between 0 and 1)
+    }
 
     // Periodic check every 5 seconds (adjust the interval as needed)
     const intervalId = setInterval(checkAuthState, 5000);
@@ -55,6 +63,12 @@ function Navbar() {
 
   return (
     <Container style={{ background: "#FF2F00"}}>
+      {/* Background Music */}
+      <audio id="background-music" autoPlay>
+        <source src={backgroundMusic} type="audio/mp3" />
+        Your browser does not support the audio element.
+      </audio>
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0' }}>
         {/* Left section with poker card icon and brand name */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
