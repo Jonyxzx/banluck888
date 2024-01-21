@@ -50,19 +50,7 @@ const Game = () => {
                                 sx={{ margin: '8px' }}
                                 onClick={startSinglePlayerGame} // Use the new function
                             >
-                                Single Player<br/>(bet $100)
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                size="large"
-                                sx={{ margin: '8px' }}
-                                onClick={() => {
-                                    setMenu(false);
-                                    setSingle(false);
-                                }}
-                            >
-                                Multiplayer
+                                Play<br/>(bet $100)
                             </Button>
                         </Box>
                     </Box>
