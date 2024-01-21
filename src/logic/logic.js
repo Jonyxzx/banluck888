@@ -367,7 +367,7 @@ function determineWinner(playerHand, dealerHand) {
         */
         if (playerScore > 21 && playerScore < 50 && dealerScore > 21 && dealerScore < 50) {
             multiplier = 0;  //Both bust
-        } else if (playerScore > 21 && playerScore < 50 || playerScore < dealerScore) {
+        } else if (playerScore > 21 && playerScore < 50 || (playerScore < dealerScore && (dealerScore <= 21 || dealerScore > 50))) {
             if (dealerScore === 80) {
                 multiplier = -3; //Dealer Ban-Ban, lose x3
             } else if (dealerScore === 60 || dealerScore === 70) {

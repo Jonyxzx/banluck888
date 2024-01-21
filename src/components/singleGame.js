@@ -358,9 +358,9 @@ export default function SingleGame({ game }) {
             gainText = "You won " + amt;
         }
 
-        setGameResult(resultText);
         setAmtGain(gainText);
-
+        setGameResult(resultText);
+        
         setHasWon(true);
         setIsEnd(true);
     };
