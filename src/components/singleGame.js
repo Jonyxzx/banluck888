@@ -8,6 +8,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import winSound from '../assets/sounds/win.mp3';
 import loseSound from '../assets/sounds/lose.mp3';
 import drawSound from '../assets/sounds/tie.mp3';
+import { ref, onValue } from "firebase/database";
+import { db } from '../backend/firebase';
+import { auth } from "../backend/firebase";
 
 const cards = [{
     "0": {
@@ -282,13 +285,37 @@ export default function SingleGame({ game }) {
     const [hasStood, setHasStood] = useState(false);
     const [gameResult, setGameResult] = useState('');
     const [hasWon, setHasWon] = useState(false);
-    const [amt, setAmt] = useState(0);
+    const [amt, setAmt] = useState('');
     const [amtGain, setAmtGain] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
     const winAudio = React.createRef();
     const loseAudio = React.createRef();
     const drawAudio = React.createRef();
+    const [userBalance, setUserBalance] = useState(0);
+
+
+    const authUser = auth.currentUser;
+
+    useEffect(() => {
+        const reference = ref(db, `players/${authUser?.uid}/`);
+        const onDataChange = (snapshot) => {
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                if (userData && userData.balance !== undefined) {
+                    setUserBalance(userData.balance);
+                }
+            }
+        };
+
+        // Set up a real-time listener for changes
+        const unsubscribe = onValue(reference, onDataChange);
+
+        // Return a cleanup function to remove the listener when the component unmounts
+        return () => {
+            unsubscribe(); // Remove the real-time listener
+        };
+    }, [authUser]);
 
 
     const restart = () => {
@@ -296,11 +323,17 @@ export default function SingleGame({ game }) {
         const gameWithCards = dealCards(newGame);
         setHasWon(false);
         setIsEnd(true);
-        if (location.pathname === '/game') {
-            navigate('/menu');
+        if (userBalance <= 0) {
+            navigate('/payment')
         } else {
-            navigate('/game');
+            if (location.pathname === '/game') {
+                navigate('/menu');
+            } else {
+                navigate('/game');
+            }
         }
+
+
     };
 
     const handleHit = () => {
@@ -313,7 +346,7 @@ export default function SingleGame({ game }) {
             writeBalanceData(amt);
             setHasWon(false);
         }
-    }, [hasWon, amt]);
+    }, [hasWon, amt, amtGain, gameResult]);
 
     useEffect(() => {
         if (isEnd) {
@@ -334,12 +367,6 @@ export default function SingleGame({ game }) {
         }
     }, [playerValue, playerHands, dealerValue, game]);
 
-    useEffect(() => {
-        if (hasStood) {
-            setIsEnd(true);
-        }
-    }, [hasStood]);
-
     const handleStand = () => {
         setIsEnd(true);
         setHasStood(true);
@@ -347,6 +374,12 @@ export default function SingleGame({ game }) {
         setDealerValue(calculateHandValue(game.dealer.hand));
         win();
     };
+
+    useEffect(() => {
+        if (hasStood) {
+            setIsEnd(true);
+        }
+    }, [hasStood, game]);
 
     const win = () => {
         const playerMul = determineWinner(game.players[0].hand, game.dealer.hand);
@@ -371,7 +404,7 @@ export default function SingleGame({ game }) {
 
         setAmtGain(gainText);
         setGameResult(resultText);
-        
+
         setHasWon(true);
         setIsEnd(true);
     };
