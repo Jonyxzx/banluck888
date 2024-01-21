@@ -341,8 +341,9 @@ function calculateHandValue(hand) {
         }    
     }
 
-    if (numAces > 0 && (sum > 21 || hand.length === 4)) {
+    while (numAces > 0 && (sum > 21 || hand.length === 4)) {
         sum -= 9;
+        numAces--;
     }
 
     if (hand.length === 5 && sum <= 21) {
@@ -366,27 +367,40 @@ function determineWinner(playerHand, dealerHand) {
         */
         if (playerScore > 21 && playerScore < 50 && dealerScore > 21 && dealerScore < 50) {
             multiplier = 0;  //Both bust
-        } else if (playerScore > 21 && playerScore < 50) {
-            multiplier = -1; //Player bust
-        } else if (dealerScore > 21 && dealerScore < 50) {
-            multiplier = 1; //Dealer bust
-        } else if (playerScore === dealerScore) {
-            multiplier = 0; //Same score, Tie
-        } else if (playerScore > dealerScore) {
+        } else if (playerScore > 21 && playerScore < 50 || playerScore < dealerScore) {
+            if (dealerScore === 80) {
+                multiplier = -3; //Dealer Ban-Ban, lose x3
+            } else if (dealerScore === 60 || dealerScore === 70) {
+                multiplier = -2; //Dealer Ban-Luck/Wu-Long, lose x2
+            } else {
+                multiplier = -1; //Your luck shit, lose
+            }
+        } else if (dealerScore > 21 && dealerScore < 50 || playerScore > dealerScore) {
             if (playerScore === 80) {
                 multiplier = 3; //Ban-Ban x3
-            } else if (playerScore === 60 || playerScore === 70) {
+            } else if (playerScore === 60 || playerScore === 70 || (dealerScore > 21 && dealerScore < 50 && dealerHand.length === 5)) {
                 multiplier = 2; //Ban-Luck/Wu-Long x2
             } else {
                 multiplier = 1; //Normal Win x1
             }
-        } else if (dealerScore === 80) {
-            multiplier = -3; //Dealer Ban-Ban, lose x3
-        } else if (dealerScore === 60 || dealerScore === 70) {
-            multiplier = -2; //Dealer Ban-Luck/Wu-Long, lose x2
-        } else {
-            multiplier = -1; //Your luck shit, lose
+        } else if (playerScore === dealerScore) {
+            multiplier = 0; //Same score, Tie
         }
+        // } else if (playerScore > dealerScore) {
+        //     if (playerScore === 80) {
+        //         multiplier = 3; //Ban-Ban x3
+        //     } else if (playerScore === 60 || playerScore === 70) {
+        //         multiplier = 2; //Ban-Luck/Wu-Long x2
+        //     } else {
+        //         multiplier = 1; //Normal Win x1
+        //     }
+        // } else if (dealerScore === 80) {
+        //     multiplier = -3; //Dealer Ban-Ban, lose x3
+        // } else if (dealerScore === 60 || dealerScore === 70) {
+        //     multiplier = -2; //Dealer Ban-Luck/Wu-Long, lose x2
+        // } else {
+        //     multiplier = -1; //Your luck shit, lose
+        // }
 
         if (playerScore > 21 && playerScore < 50 && playerHand.length === 5) {
             multiplier = -2; //Your luck damn shit, Wu-Long bust, lose dbl

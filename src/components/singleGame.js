@@ -271,7 +271,6 @@ const cards = [{
 ]
 
 export default function SingleGame({ game }) {
-
     const [playerHands, setPlayerHands] = useState([]);
     const [dealerHands, setDealerHands] = useState([]);
     const [playerValue, setPlayerValue] = useState(0);
@@ -281,36 +280,33 @@ export default function SingleGame({ game }) {
     const [gameResult, setGameResult] = useState('');
     const [hasWon, setHasWon] = useState(false);
     const [amt, setAmt] = useState(0);
+    const [amtGain, setAmtGain] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
 
     const restart = () => {
         const newGame = initialiseGame(1);
         const gameWithCards = dealCards(newGame);
-        setHasWon(false)
-        setIsEnd(true)
+        setHasWon(false);
+        setIsEnd(true);
         if (location.pathname === '/game') {
-            navigate('/menu')
+            navigate('/menu');
         } else {
-            navigate('/game')
+            navigate('/game');
         }
-
     };
 
     const handleHit = () => {
-        // Implement logic for Hit button
-        // Example: Draw a new card and update state
         setPlayerHands(hitCard(game.shuffledDeck, game.players[0]));
         setPlayerValue(calculateHandValue(game.players[0].hand));
-
     };
 
     useEffect(() => {
         if (hasWon) {
-            writeBalanceData(amt)
-            setHasWon(false)
+            writeBalanceData(amt);
+            setHasWon(false);
         }
-    }, [hasWon])
+    }, [hasWon, amt]);
 
     useEffect(() => {
         if (isEnd) {
@@ -324,47 +320,50 @@ export default function SingleGame({ game }) {
 
     useEffect(() => {
         if ((playerHands.length === 5 || playerValue >= 21)) {
-            setIsEnd(true)
+            setIsEnd(true);
             setDealerHands(hitCardDealer(game.shuffledDeck, game.dealer));
             setDealerValue(calculateHandValue(game.dealer.hand));
             win();
         }
     }, [playerValue, playerHands, dealerValue, game]);
 
-
     useEffect(() => {
         if (hasStood) {
-            setIsEnd(true)
+            setIsEnd(true);
         }
-    })
+    }, [hasStood]);
+
     const handleStand = () => {
-        // Implement logic for Stand button
-        // Example: Dealer's turn, determine winner, etc.
-        setIsEnd(true)
+        setIsEnd(true);
         setHasStood(true);
         setDealerHands(hitCardDealer(game.shuffledDeck, game.dealer));
         setDealerValue(calculateHandValue(game.dealer.hand));
-        // After the dealer's turn is complete, determine the winner
         win();
     };
 
-
     const win = () => {
         const playerMul = determineWinner(game.players[0].hand, game.dealer.hand);
-        console.log(playerMul)
-        setAmt(playerMul * 100)
+        setAmt(playerMul * 100);
+
+        let resultText = '';
+        let gainText = '';
+
         if (playerMul === 0) {
-            setGameResult("You Draw >_<")
+            resultText = "You Draw >_<";
         } else if (playerMul < 0) {
-            setGameResult("You Lose T.T")
+            resultText = "You Lose T.T";
+            gainText = "You lost " + amt;
         } else {
-            setGameResult("You WIN!")
+            resultText = "You WIN!";
+            gainText = "You won " + amt;
         }
 
-        // update and end the game
-        setHasWon(true)
-        setIsEnd(true)
-    }
+        setGameResult(resultText);
+        setAmtGain(gainText);
+
+        setHasWon(true);
+        setIsEnd(true);
+    };
 
     return (
         <>
@@ -374,7 +373,6 @@ export default function SingleGame({ game }) {
                         textAlign: 'center',
                     }}
                 >
-
                     {/* Coin icon and bet amount */}
                     <Box
                         sx={{
@@ -391,29 +389,46 @@ export default function SingleGame({ game }) {
                     </Box>
 
                     {/* Dealer portion */}
-                    <Typography>Dealer: {dealerValue == 60 ? "Ban Luck" : dealerValue == 70 ? "Wu Long" : dealerValue == 80 ? "Ban Ban" : dealerValue}</Typography>
-                    {isEnd ? dealerHands.map(card => <img
-                        key={`${card}-${0}`}
-                        src={require("../assets/cards/" + cards[0][card].image)}
-                        height="150px"
-                    />)
-                        :
-                        dealerHands.map(card =>
-                            <img src={dealerCard} height="150px" />)}
+                    <Box sx={{ paddingTop: "20px" }}>
+                        {isEnd ? dealerHands.map((card, index) => (
+                            <img
+                                key={`${card}-${index}`}
+                                src={require("../assets/cards/" + cards[0][card].image)}
+                                height="150px"
+                                alt={`dealer-card-${index}`}
+                            />
+                        )) : (
+                            dealerHands.map((_, index) => (
+                                <img
+                                    key={`hidden-card-${index}`}
+                                    src={dealerCard}
+                                    height="150px"
+                                    alt={`hidden-card-${index}`}
+                                />
+                            ))
+                        )}
+                        <Typography>Dealer: {dealerValue == 60 ? "Ban Luck" : dealerValue == 70 ? "Wu Long" : dealerValue == 80 ? "Ban Ban" : dealerValue}</Typography>
+                    </Box>
 
                     {/* Player portion */}
-                    <Box sx={{
-                        position: 'absolute',
-                        bottom: '0',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        marginBottom: '100px',
-                    }}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            bottom: '0',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            marginBottom: '100px',
+                        }}
+                    >
                         <Typography sx={{ paddingBottom: '5px' }}>Current Value: {playerValue == 60 ? "Ban Luck" : playerValue == 70 ? "Wu Long" : playerValue == 80 ? "Ban Ban" : playerValue}</Typography>
-                        {playerHands.map(card => <img
-                            src={require("../assets/cards/" + cards[0][card].image)}
-                            height="160"
-                        />)}
+                        {playerHands.map((card, index) => (
+                            <img
+                                key={`${card}-${index}`}
+                                src={require("../assets/cards/" + cards[0][card].image)}
+                                height="160"
+                                alt={`player-card-${index}`}
+                            />
+                        ))}
 
                         {/* Buttons for Hit and Stand */}
                         <Box
@@ -423,16 +438,17 @@ export default function SingleGame({ game }) {
                                 marginTop: '20px',
                             }}
                         >
-                            {playerHands.length != 5 && playerValue < 21 && !hasStood ? <Button variant="contained" color="primary" onClick={handleHit}>
-                                Hit
-                            </Button> :
-                                <></>}
-                            {playerHands.length != 5 && playerValue < 21 && !hasStood && playerValue > 15 ? <Button variant="contained" color="secondary" onClick={handleStand}>
-                                Stand
-                            </Button> :
-                                <></>}
+                            {playerHands.length !== 5 && playerValue < 21 && !hasStood && (
+                                <Button variant="contained" color="primary" onClick={handleHit}>
+                                    Hit
+                                </Button>
+                            )}
+                            {playerHands.length !== 5 && playerValue < 21 && !hasStood && playerValue > 15 && (
+                                <Button variant="contained" color="secondary" onClick={handleStand}>
+                                    Stand
+                                </Button>
+                            )}
                         </Box>
-
                     </Box>
 
                     {/* Display game result at the center */}
@@ -450,6 +466,12 @@ export default function SingleGame({ game }) {
                             }}
                         >
                             <Typography variant="h4" color="orange">{gameResult}</Typography>
+                            {gameResult === "You WIN!" ? (
+                                <Typography variant="h6" color="green">{amtGain}</Typography>
+                            ) : (
+                                <Typography variant="h6" color="red">{amtGain}</Typography>
+                            )}
+
                             <Button variant="contained" color="primary" onClick={() => { restart() }}>
                                 Play Again?
                             </Button>
