@@ -5,6 +5,9 @@ import dealerCard from '../assets/cards/back_card.jpeg';
 import { shuffleDeck, dealCards, calculateHandValue, determineWinner, initialiseGame, hitCard, hitCardDealer } from '../logic/logic';
 import { writePlayerData, writeDeckData, writeBalanceData } from '../backend/command'
 import { useNavigate, useLocation } from 'react-router-dom';
+import winSound from '../assets/sounds/win.mp3';
+import loseSound from '../assets/sounds/lose.mp3';
+import drawSound from '../assets/sounds/tie.mp3';
 
 const cards = [{
     "0": {
@@ -283,6 +286,10 @@ export default function SingleGame({ game }) {
     const [amtGain, setAmtGain] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
+    const winAudio = React.createRef();
+    const loseAudio = React.createRef();
+    const drawAudio = React.createRef();
+
 
     const restart = () => {
         const newGame = initialiseGame(1);
@@ -349,11 +356,15 @@ export default function SingleGame({ game }) {
         let gainText = '';
 
         if (playerMul === 0) {
+            drawAudio.current.play();
             resultText = "You Draw >_<";
+
         } else if (playerMul < 0) {
+            loseAudio.current.play();
             resultText = "You Lose T.T";
             gainText = "You lost " + amt;
         } else {
+            winAudio.current.play();
             resultText = "You WIN!";
             gainText = "You won " + amt;
         }
@@ -367,6 +378,18 @@ export default function SingleGame({ game }) {
 
     return (
         <>
+            <audio ref={winAudio}>
+                <source src={winSound} type="audio/mp3" />
+                Your browser does not support the audio element.
+            </audio>
+            <audio ref={loseAudio}>
+                <source src={loseSound} type="audio/mp3" />
+                Your browser does not support the audio element.
+            </audio>
+            <audio ref={drawAudio}>
+                <source src={drawSound} type="audio/mp3" />
+                Your browser does not support the audio element.
+            </audio>
             <Container sx={{ position: 'relative', height: '100vh' }}>
                 <Box
                     sx={{
